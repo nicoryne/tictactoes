@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">midterms-tictactoe</string>
+
+
+    <!-- STRINGS -->
+    <string name="main_activity_btn_text">Open TicTacToe</string>
+    <string name="cell_no_move">" "</string>
+    <string name="cell_O_move">O</string>
+    <string name="cell_X_move">X</string>
+    <string name="player_O_turn_string">Player O\'s turn</string>
+    <string name="player_X_turn_string">Player X\'s turn</string>
+
+
+    <!-- CONTENT DESCRIPTIONS -->
+    <string name="tictactoeButton">TicTacToe Button</string>
+
+</resources>
