@@ -163,8 +163,8 @@ public class TicTacToe extends AppCompatActivity {
     }
 
     private void endGame(CharSequence textToShow) {
-        for(Button otherButtons: buttonArrayList) {
-            otherButtons.setEnabled(false);
+        for(Button button: buttonArrayList) {
+            button.setEnabled(false);
         }
         turnView.setText(textToShow);
     }
