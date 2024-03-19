@@ -10,7 +10,6 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.logging.Logger;
 
 public class TicTacToe extends AppCompatActivity {
 
@@ -25,14 +24,13 @@ public class TicTacToe extends AppCompatActivity {
     Button btn9;
     Button btnRestart;
     TextView turnView;
-    Boolean isOTurn = true;
+    Character playerTurn = 'O';
     CharSequence playerXTurn = "Player X's turn";
     CharSequence playerOTurn = "Player O's turn";
-
     ArrayList<Button> buttonArrayList = new ArrayList<>();
     int[] gameState = {2, 2, 2, 2, 2, 2, 2, 2, 2};
-
-    int[][] winPositions = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8},
+    int[][] winPositions =
+            {{0, 1, 2}, {3, 4, 5}, {6, 7, 8},
             {0, 3, 6}, {1, 4, 7}, {2, 5, 8},
             {0, 4, 8}, {2, 4, 6}};
     int checkCounter = 0;
@@ -43,14 +41,19 @@ public class TicTacToe extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tic_tac_toe);
 
-        initButtons();
+
+        //  Init TextView turnView
         turnView = findViewById(R.id.tv1);
 
+        initButtons();
+        fillButtonArrayList();
+        setButtonClickers();
+
+        //  Save instance when changing orientation
         if (savedInstanceState != null) {
-            isOTurn = savedInstanceState.getBoolean("isOTurn");
+            playerTurn = savedInstanceState.getChar("playerTurn");
             CharSequence turnText = savedInstanceState.getCharSequence("turnText");
             turnView.setText(turnText);
-
             btn1.setText(savedInstanceState.getCharSequence("btn1Text"));
             btn2.setText(savedInstanceState.getCharSequence("btn2Text"));
             btn3.setText(savedInstanceState.getCharSequence("btn3Text"));
@@ -67,7 +70,7 @@ public class TicTacToe extends AppCompatActivity {
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putBoolean("isOTurn", isOTurn);
+        outState.putChar("playerTurn", playerTurn);
         outState.putCharSequence("turnText", turnView.getText());
 
         outState.putCharSequence("btn1Text", btn1.getText());
@@ -81,10 +84,8 @@ public class TicTacToe extends AppCompatActivity {
         outState.putCharSequence("btn9Text", btn9.getText());
     }
 
-    void initButtons() {
+    private void initButtons() {
         btnRestart = findViewById(R.id.btnRestart);
-        btnRestart.setOnClickListener(v -> restartGame());
-
         btn1 = findViewById(R.id.btn1);
         btn2 = findViewById(R.id.btn2);
         btn3 = findViewById(R.id.btn3);
@@ -94,8 +95,9 @@ public class TicTacToe extends AppCompatActivity {
         btn7 = findViewById(R.id.btn7);
         btn8 = findViewById(R.id.btn8);
         btn9 = findViewById(R.id.btn9);
+    }
 
-        //  ADDING BUTTONS TO ARRAYLIST
+    private void fillButtonArrayList() {
         buttonArrayList.add(btn1);
         buttonArrayList.add(btn2);
         buttonArrayList.add(btn3);
@@ -105,54 +107,69 @@ public class TicTacToe extends AppCompatActivity {
         buttonArrayList.add(btn7);
         buttonArrayList.add(btn8);
         buttonArrayList.add(btn9);
+    }
 
-        // SET ON CLICKERS
+    private void setButtonClickers() {
+        btnRestart.setOnClickListener(v -> restartGame());
+
         for(Button button : buttonArrayList) {
             button.setOnClickListener(v -> {
-                int index = buttonArrayList.indexOf(button);
                 checkCounter++;
-                button.setClickable(false);
-
-                if (isOTurn) {
-                    gameState[index] = 0;
-                    button.setText("O");
-                    turnView.setText(playerXTurn);
-                    isOTurn = false;
-                } else {
-                    gameState[index] = 1;
-                    button.setText("X");
-                    turnView.setText(playerOTurn);
-                    isOTurn = true;
-                }
-
-                if (checkCounter == 9) {
-                    turnView.setText((CharSequence) "Match Draw!");
-                }
-
-                if(checkCounter > 4) {
-                    for(int[] winPosition : winPositions) {
-                        if (gameState[winPosition[0]] == gameState[winPosition[1]] &&
-                                gameState[winPosition[1]] == gameState[winPosition[2]] &&
-                                gameState[winPosition[0]] != 2) {
-
-                            for(Button otherButtons: buttonArrayList) {
-                                otherButtons.setEnabled(false);
-                            }
-
-                            if(!isOTurn) {
-                                turnView.setText((CharSequence) "Player O won!");
-                            } else {
-                                turnView.setText((CharSequence) "Player X won!");
-                            }
-                            Toast.makeText(TicTacToe.this, "Winner!", Toast.LENGTH_LONG).show();
-                        }
-                    }
-                }
+                gameButtonClicked(button);
+                checkMatchState();
             });
+        }
+
+
+    }
+
+    private void gameButtonClicked(Button button) {
+        int index = buttonArrayList.indexOf(button);
+
+        if (playerTurn == 'O') {
+            gameState[index] = 0;
+            button.setText("O");
+            turnView.setText(playerXTurn);
+            playerTurn = 'X';
+        } else {
+            gameState[index] = 1;
+            button.setText("X");
+            turnView.setText(playerOTurn);
+            playerTurn = 'O';
+        }
+        button.setClickable(false);
+    }
+
+    private void checkMatchState() {
+        if (checkCounter == 9) {
+            endGame("Match Draw!");
+        }
+
+        if(checkCounter > 4) {
+            for(int[] winPosition : winPositions) {
+                if (gameState[winPosition[0]] == gameState[winPosition[1]] &&
+                        gameState[winPosition[1]] == gameState[winPosition[2]] &&
+                        gameState[winPosition[0]] != 2) {
+
+                    if(playerTurn == 'X') {
+                        endGame("Player O won!");
+                    } else {
+                        endGame("Player X won!");
+                    }
+                    Toast.makeText(TicTacToe.this, "Winner!", Toast.LENGTH_LONG).show();
+                }
+            }
         }
     }
 
-    void restartGame() {
+    private void endGame(CharSequence textToShow) {
+        for(Button otherButtons: buttonArrayList) {
+            otherButtons.setEnabled(false);
+        }
+        turnView.setText(textToShow);
+    }
+
+    private void restartGame() {
         Arrays.fill(gameState, 2);
 
         for(Button button : buttonArrayList) {
@@ -161,10 +178,8 @@ public class TicTacToe extends AppCompatActivity {
             button.setEnabled(true);
         }
 
-        isOTurn = true;
+        playerTurn = 'O';
         checkCounter = 0;
         turnView.setText(playerOTurn);
     }
-
-
 }

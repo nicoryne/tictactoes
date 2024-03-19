@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -20,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
         btnTicTacToe = findViewById(R.id.btnTicTacToe);
 
         btnTicTacToe.setOnClickListener(v -> {
-            String toastMessage = "NICOLO RYNE A. PORTER" + "\n" + "        TicTacToe Activity";
+            String toastMessage = "FULL NAME" + "\n" + "        TicTacToe Activity";
             Toast.makeText(MainActivity.this, toastMessage, Toast.LENGTH_SHORT).show();
             startActivity(new Intent(MainActivity.this, TicTacToe.class));
         });
