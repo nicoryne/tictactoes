@@ -41,7 +41,6 @@ public class TicTacToe extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tic_tac_toe);
 
-
         //  Init TextView turnView
         turnView = findViewById(R.id.tv1);
 
@@ -119,8 +118,6 @@ public class TicTacToe extends AppCompatActivity {
                 checkMatchState();
             });
         }
-
-
     }
 
     private void gameButtonClicked(Button button) {
@@ -156,6 +153,7 @@ public class TicTacToe extends AppCompatActivity {
                     } else {
                         endGame("Player X won!");
                     }
+
                     Toast.makeText(TicTacToe.this, "Winner!", Toast.LENGTH_LONG).show();
                 }
             }
